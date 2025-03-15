@@ -48,7 +48,7 @@ After modeling the flight characteristics and deciding on a location for servos 
 
 Steering fins were 3d modeled in Fusion360 to match the OpenRocket design used to model flight. Metal wires were glued into the center of the servo connector nubs to provide more support than just friction fitting the fin over the servo connector nubs. These semi-rigid wires pass all the way through the fin and are bent over at the tops of the fins to retain them and have apparently worked in providing support, as fins have never come off in flight (but have in landing, and have been easily recovered in immediate proximity to the rocket and reinstalled without the glue being necessary). 
 
-![Servo Housing](./media/rocket_model.jpg)
+![Servo Housing](./media/servo_housing.jpg)
 
 
 ### Sensor Puck
