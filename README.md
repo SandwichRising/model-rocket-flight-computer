@@ -15,11 +15,15 @@ The project scope is divided into versions which contain a varying number of fea
 
 Additional features planned for implementation during these version iterations are: D0-D3 SDIO style SD card saving (using RP2040 PIO) rather than SPI implementation, interrupt-driven IMU data retrieval and servo control, LoRa between rocket and ground station, and in-house produced engines and servo operated parachute deployment (as opposed to using Estes engines for flight and parachute deployment).
 
+![Model Rocket](./media/rocket.jpg)
+
 
 ## Design Overview
 
-![Model Rocket](./media/rocket.jpg)
+The first milestone (V1) was to complete onboard flight control for vertical-up active flight guidance to continuously steer a model rocket directly away from Earth. This required creating a flight computer, flight computer software, and model rocket hardware. The flight computer hardware and sofware design blocks may be seen in the image below:
+
 ![Flight Computer Structure](./media/flight_computer_structure.jpg)
+
 
 ### Flight Computer
 
@@ -66,11 +70,11 @@ The BMP390 barometer planned for use has a complicated initialization process, a
 
 The PA1616D GPS module is installed in the rocket's sensor puck and connected to the flight computer, however communication over UART with the GPS is relatively slow and must be parsed in full, instead of retrieving specific data on-demand as with the IMU. With the current V1 software implementation, receiving this GPS UART data causes the looping of the main C program to iterate slow enough to cause stuttering in the control fin steering. Due to potential steering stuttering, GPS data retrieval is currently disabled in V1. Planned fixes to this include moving the IMU data retrieval and steering fin PIO register control to an interrupt-based timer format, rather than polling. This will allow more freedom in dealing with slower loop iterations and parsing the UART data while having smooth steering control at all times. In addition, moving the UART parsing to an interrupt-based format may also be implemented to reduce polling UART when unnecessary. 
 
-The SD card currently saves at 10Hz. More frequent logging is desired, however saving more often over SPI in V1 causes steering stuttering similar to using GPS UART. Interrupt-based solutions for IMU data and steering fin control are expected to help with this, and additionally moving from SPI-based saving to parallel D0-D3 SDIO communication though a PIO state machine should allow higher speed interface to the SD card. [carlk3's github library no-OS-FatFS-SD-SDIO-SPI-RPi-Pico](https://github.com/carlk3/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico) is used to interface to the SD card over SPI and will continue to be used for SDIO. 
+The SD card currently saves at 10Hz. More frequent logging is desired, however saving more often over SPI in V1 causes steering stuttering similar to using GPS UART. Interrupt-based solutions for IMU data and steering fin control are expected to help with this, and additionally moving from SPI-based saving to parallel D0-D3 SDIO communication though a PIO state machine should allow higher speed interface to the SD card. [carlk3's github library no-OS-FatFS-SD-SDIO-SPI-RPi-Pico](https://github.com/carlk3/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico) is used to interface to the SD card over SPI and will continue to be used for SDIO interfacing. 
 
 The BNO055 IMU in V1 is set to an NDOF mode, using a sensor fusion of the accelerometer, gyroscope, and magnetic sensor provided to a Kalman filter to output very stable data. This filtered data provides a gravity vector for each axis, which are used in steering. In an ideal vertical state, the gravity vector for the Z Axis is 9.8, and the gravity vectors for both the X and Y Axis are 0. This ideal state would have the rocket nose pointed straight away from the earth. As the rocket tips sideways, the gravity vectors for X and Y increase/decrease and Z decreases. This non-ideal variation from 0 in X and Y is directly used to control the servo pulses for the related steering fins, correcting the rocket's flight to become more vertical. These gravity vectors, along with acceleration vectors, time, heading, and temperature are all collected from the IMU and saved to the SD card to later reconstruct the rocket flight path to analyze performance.
 
-The servos use a PIO assembly program which monitors the attached servo's state machine register for a delay number. This delay number is used to count down system clock ticks to produce a high pulse between approximately 1-2ms in duration, which corresponds to the two steering extremes of the servo. The countdown is then multiplied by 10 when the output goes low to generate a 50-100Hz high/low pulse cycle desirable for servo control. Once a delay is received, the state machine is able to deliver consistent pulse timing to the servos, completely independent of the C program, delivering consistent fin positioning regardless of overall program state. Only further steering changes are dependent on the C program writing new values to the state machine's input register. In V1, the LEDs use a very similar program to blink on and off at different speeds, informing the operator of program status.
+The servos use a PIO assembly program which monitors the attached servo's state machine register for a delay number. This delay number is used to count down system clock ticks to produce a high pulse between approximately 1-2ms in duration, which corresponds to the two steering extremes of the servo. The countdown is then multiplied by 10 when the output goes low to generate a 100-200Hz high/low pulse cycle desirable for servo control. Once a delay is received, the state machine is able to deliver consistent pulse timing to the servos, completely independent of the C program, delivering consistent fin positioning regardless of overall program state. Only further steering changes are dependent on the C program writing new values to the state machine's input register. In V1, the LEDs use a very similar program to blink on and off at different speeds, informing the operator of program status.
 
 
 ## Collected Flight Data

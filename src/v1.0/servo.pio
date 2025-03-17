@@ -1,0 +1,34 @@
+// servo control PIO assembly code
+// receives delay for pulse ON time
+// multiplies delay for OFF time 
+// only 100-200Hz pulse reqd for good servo performance
+
+
+.program servo
+.wrap_target
+    pull noblock
+    out y, 32
+    mov x, y
+    set pins, 1   ; servo pulse on
+lp1:
+    jmp x-- lp1   ; delay
+    mov x, y
+    set pins, 0   ; servo pulse off
+lp2:
+    nop [5]      ; lengthen off time (results in 50-100Hz cycles)
+    jmp x-- lp2  
+    mov x, y
+.wrap  
+
+% c-sdk {
+// this is a raw helper function for use by the user which sets up the GPIO output, 
+// and configures the SM to output on a particular pin
+
+void servo_program_init(PIO pio, uint sm, uint offset, uint pin) {
+   pio_gpio_init(pio, pin);
+   pio_sm_set_consecutive_pindirs(pio, sm, pin, 1, true);
+   pio_sm_config c = blink_program_get_default_config(offset);
+   sm_config_set_set_pins(&c, pin, 1);
+   pio_sm_init(pio, sm, offset, &c);
+}
+%}

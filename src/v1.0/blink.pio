@@ -1,0 +1,33 @@
+// LED control PIO assembly code
+// receives delay for ON time
+// receiving 0 turns off LED
+
+.program blink
+.wrap_target
+    pull noblock
+    out y, 32
+    mov x, y
+    jmp !y lp1    ; If 0 is sent in, remain off
+    set pins, 1   ; Turn LED on
+lp1:
+    jmp x-- lp1   ; Delay for (x + 1) cycles, x is a 32 bit number
+    mov x, y
+    set pins, 0   ; Turn LED off
+lp2:
+    jmp x-- lp2   ; Delay for the same number of cycles again
+    mov x, y
+.wrap             ; Blink forever!
+
+
+% c-sdk {
+// this is a raw helper function for use by the user which sets up the GPIO output, 
+// and configures the SM to output on a particular pin
+
+void blink_program_init(PIO pio, uint sm, uint offset, uint pin) {
+   pio_gpio_init(pio, pin);
+   pio_sm_set_consecutive_pindirs(pio, sm, pin, 1, true);
+   pio_sm_config c = blink_program_get_default_config(offset);
+   sm_config_set_set_pins(&c, pin, 1);
+   pio_sm_init(pio, sm, offset, &c);
+}
+%}
