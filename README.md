@@ -86,15 +86,3 @@ As of the time of writing, V1 has 9 flights logged. Using acceleration and gravi
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
