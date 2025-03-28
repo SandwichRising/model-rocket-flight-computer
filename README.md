@@ -9,11 +9,13 @@
 
 The project scope is divided into versions which contain a varying number of features. Currently V1 is complete and has flight data recorded from numerous launches to analyze the active flight control behavior. Future versions with additional features are planned, however no specific timeline is established to implement these features:
 
-- V1 (Completed): Functional Flight Computer with BNO055 IMU, active vertical-flight steering fin control, and data logging to SD Card for flight analysis. 
-- V2: Additional data sources of GPS and/or barometer module added to data logging. 
-- V3: Fly-to-location and/or fly along trajectory features to simulate real-world requirements of high-powered rockets to exit atmosphere and enter orbit along predetermined flight paths.
+- V1 (Open-Source and Completed): Functional Flight Computer with BNO055 IMU, active vertical-flight steering fin control, and data logging to SD Card for flight analysis. 
+- V2 (Closed-Source): Additional data sources of GPS and/or barometer module added to data logging. 
+- V3 (Closed-Source): Fly-to-location and/or fly along trajectory features to simulate real-world requirements of high-powered rockets to exit atmosphere and enter orbit along predetermined flight paths.
 
 Additional features planned for implementation during these version iterations are: D0-D3 SDIO style SD card saving (using RP2040 PIO) rather than SPI implementation, interrupt-driven IMU data retrieval and servo control, LoRa between rocket and ground station, and in-house produced engines and servo operated parachute deployment (as opposed to using Estes engines for flight and parachute deployment).
+
+Versions of this flight computer software after Version 1 will be private and the source code will be closed to prevent misuse. If you wish to collaborate and/or have a genuine scholarly aerospace or space-based application for later software versions, please contact me regarding access.  
 
 ![Model Rocket](./media/rocket.jpg)
 
